@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Kullanici {
+  id          Int          @id @default(autoincrement())
+  isim        String
+  email       String       @unique
+  departman   String
+  rol         Rol          @default(PERSONEL)
+  talepler    IzinTalebi[]
+  olusturuldu DateTime     @default(now())
+}
+
+model IzinTalebi {
+  id          Int        @id @default(autoincrement())
+  kullaniciId Int
+  kullanici   Kullanici  @relation(fields: [kullaniciId], references: [id])
+  izinTuru    IzinTuru
+  baslangic   DateTime
+  bitis       DateTime
+  aciklama    String?
+  durum       Durum      @default(BEKLEMEDE)
+  olusturuldu DateTime   @default(now())
+  guncellendi DateTime   @updatedAt
+}
+
+enum Rol {
+  PERSONEL
+  YONETICI
+}
+
+enum IzinTuru {
+  YILLIK_IZIN
+  HASTALIK
+  DOGUM
+  UCRETSIZ
+  MAZERET
+}
+
+enum Durum {
+  BEKLEMEDE
+  ONAYLANDI
+  REDDEDILDI
+}
